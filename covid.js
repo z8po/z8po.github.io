@@ -134,6 +134,25 @@ const chart = (data, options) => {
     .style('mix-blend-mode', 'multiply')
     .attr('d', d => line(d.values.map(val => ({val:val, name:d.name}))))
 
+    const labels = svg.append("g");
+    labels
+      .selectAll("text")
+      .data(data.series[options.yOption])
+      .join("text")
+      .text(d => d[0])
+      .attr(
+        "transform",
+        (d,i )=>
+          `translate(${x(d.values[d.values.length - 1] || 1)},${y(
+            data.dates[i] || 1
+          ) - 5})`
+      )
+      .attr("text-anchor", "middle")
+      .attr("dx", -6)
+      .attr("dy", -4)
+      .style("fill", d => '#333');
+
+
   svg.call(hover, path)
   return svg.node()
 }
@@ -154,7 +173,6 @@ Promise.all(
       )
   ))
   .then(resolvedJSONs => {
-    console.log('Received data', resolvedJSONs)
     /* here you got an array of the same length of the sources filled */
     var dates = resolvedJSONs[0]
       .reduce((hold, placeCases) => {
@@ -189,7 +207,7 @@ Promise.all(
             series.push(serie)
           }
           return series
-        }, [])
+        }, []).sort((a,b) => a.values[a.values.length - 1] > b.values[b.values.length - 1] ? -1 : +1)
     }
     var confirmed = generateSeries(resolvedJSONs[0], dates)
     var death = generateSeries(resolvedJSONs[1], dates)
@@ -204,27 +222,43 @@ Promise.all(
         }
     }
 
-    console.log(timeSerie)
-    build()
+    var buttons =
+    confirmed.map((confirm, i) => {
+      var button = document.createElement('input')
+      button.setAttribute('type', 'button')
+      button.value = confirm.name + ' ' + confirm.values[confirm.values.length -1]
+      button.classList.toggle('selected', i < 15)
+      button.classList.toggle(confirm.name.replace(/ |\*|\(|\)|'/g, '-'))
+      button.onclick = () => {
+        button.classList.toggle('selected')
+        build()
+      }
+      document.body.querySelector('.controls .countries').append(button)
+      return button
+    })
 
+    build()
   })
 
 /* forms */
+document.querySelector('.activate-controls').onclick = () => {
+  document.querySelector('.controls').style.display = document.querySelector('.controls').style.display === 'none' ? "block" : "none"
+}
 const logScale = document.createElement('input')
 logScale.classList.add('log-scale')
 logScale.setAttribute('type', 'checkbox')
 logScale.checked = true
 const logScaleLabel = document.createElement('label')
 logScaleLabel.innerText = 'logarithmic scale'
-document.body.prepend(logScaleLabel)
-document.body.prepend(logScale)
+document.body.querySelector('.controls').prepend(logScaleLabel)
+document.body.querySelector('.controls').prepend(logScale)
 
 const xSelector = document.createElement('select')
 xSelector.classList.add('x-selector')
-document.body.prepend(xSelector)
+document.body.querySelector('.controls').prepend(xSelector)
 const xLabel = document.createElement('label')
 xLabel.innerText = 'Ordinate'
-document.body.prepend(xLabel)
+document.body.querySelector('.controls').prepend(xLabel)
 
 let xOptions0 = document.createElement('option')
 xOptions0.innerText = 'time'
@@ -241,10 +275,10 @@ xSelector.prepend(xOptions3)
 
 const ySelector = document.createElement('select')
 ySelector.classList.add('y-selector')
-document.body.prepend(ySelector)
+document.body.querySelector('.controls').prepend(ySelector)
 const yLabel = document.createElement('label')
 yLabel.innerText = 'Abscissa'
-document.body.prepend(yLabel)
+document.body.querySelector('.controls').prepend(yLabel)
 
 let yOptions1 = document.createElement('option')
 yOptions1.innerText = 'confirmed'
@@ -259,7 +293,14 @@ ySelector.prepend(yOptions3)
 let build = ySelector.onchange = xSelector.onchange = logScale.onclick = () => {
   const svg = document.querySelector('svg')
   svg && svg.remove()
-  document.body.prepend(chart(timeSerie, {
+
+  document.body.prepend(chart({...timeSerie, ...{
+    series: {
+      confirmed: timeSerie.series.confirmed.filter(a => document.querySelector('input.selected.' + a.name.replace(/ |\*|\(|\)|\'/g, '-')) ),
+      death: timeSerie.series.death.filter(a => document.querySelector('input.selected.' + a.name.replace(/ |\*|\(|\)|\'/g, '-'))) ,
+      recovered:timeSerie.series.recovered.filter(a => document.querySelector('input.selected.'+ a.name.replace(/ |\*|\(|\)|\'/g, '-')))
+      }
+  }}, {
     xOption: document.querySelector('.x-selector option:checked').innerText,
     yOption: document.querySelector('.y-selector option:checked').innerText,
     logOption: document.querySelector('.log-scale').checked

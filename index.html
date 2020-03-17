@@ -8,16 +8,42 @@
       body {
         font-family: sans-serif;
       }
+      a {
+        color:#333;
+        text-decoration: none;
+        font-weight: bold;
+      }
+      a.activate-controls {
+        font-size: 24px;
+      }
       label {
         margin: 0px 5px;
       }
       select {
         margin: 5px;
       }
+      input[type=button] {
+        background:#333;
+        color:white;
+        border-radius: 5px;
+        font-size: 14px;
+      }
+      input[type=button].selected {
+        background: green;
+      }
+      .controls {
+        display: none;
+      }
     </style>
   </head>
   <body>
-    <p>2019 Novel Coronavirus COVID-19 (2019-nCoV) Pandemia by @z8po</p>
+    <a class="activate-controls" href="#">⚙</a>
+    <div class="controls">
+      <div class="countries">
+
+      </div>
+    </div>
+    <p>2019 Novel Coronavirus COVID-19 (2019-nCoV) Pandemia. Data loaded from the daily updated <a href="https://github.com/CSSEGISandData/COVID-19">github repository</a> of Center for systems science and engineering at Johns Hopkins University. Dataviz by @z8po and @rozieres.</p>
     <script type="text/javascript" src="./csvtojson.min.js"></script>
     <script type="text/javascript" src="./d3.min.js"></script>
     <script type="text/javascript" src="./covid.js"></script>
