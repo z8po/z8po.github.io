@@ -1,5 +1,5 @@
 {
-  "short_name": "React App",
+  "short_name": "Surveillance du Sars-Cov-2",
   "name": "Surveillance du Sars-Cov-2 dans les eaux usées",
   "icons": [
     {
@@ -20,6 +20,6 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#ffffff",
+  "background_color": "#1a1e24"
 }
