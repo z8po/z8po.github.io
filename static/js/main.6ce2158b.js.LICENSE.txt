@@ -1,12 +1,6 @@
 /*! decimal.js-light v2.5.1 https://github.com/MikeMcl/decimal.js-light/LICENCE */
 
 /**
- * @license MIT
- * doc-path <https://github.com/mrodrig/doc-path>
- * Copyright (c) 2015-present, Michael Rodrigues.
- */
-
-/**
  * @license React
  * react-dom.production.min.js
  *
